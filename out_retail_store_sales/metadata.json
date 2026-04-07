@@ -1,0 +1,32 @@
+{
+  "rename_map": {
+    "Transaction ID": "transaction_id",
+    "Customer ID": "customer_id",
+    "Category": "category",
+    "Item": "item",
+    "Price Per Unit": "price_per_unit",
+    "Quantity": "quantity",
+    "Total Spent": "total_spent",
+    "Payment Method": "payment_method",
+    "Location": "location",
+    "Transaction Date": "transaction_date",
+    "Discount Applied": "discount_applied"
+  },
+  "fills": {
+    "price_per_unit_from_total_over_qty": 609,
+    "item_inferred_from_category_and_price": {
+      "attempted": 1213,
+      "resolved": 1213,
+      "still_missing": 0
+    },
+    "total_spent_from_price_times_quantity": 604
+  },
+  "imputations": {
+    "quantity_mode_hierarchy": {
+      "missing_before": 604,
+      "global_mode": 10,
+      "strategy": "mode(item) \u2192 mode(category) \u2192 global mode"
+    }
+  },
+  "notes": []
+}
