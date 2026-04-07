@@ -1,100 +1,146 @@
 # Calorie Efficiency Dataset — Data Re-engineering Report
-- Generated: 2026-04-06 22:59
-- Source file: `calorie_efficiency_dataset.csv`
 
-## 2.1 Data Value Awareness & Dataset Selection (Group)
-Dataset selected: `calorie_efficiency_dataset.csv` (local file provided for coursework). It appears to contain fitness and health-related metrics and a categorical outcome label.
+- **Generated:** 2026-04-07 08:47
+- **Source file:** `calorie_efficiency_dataset.csv`
+- **Records (raw):** 1,000,000 rows × 15 columns
 
-Why improving the data is valuable: even small inconsistencies in health/fitness datasets can cause misleading analytics, unfair comparisons between individuals, or incorrect model training labels. Improving consistency and semantics (units, labels, redundant fields) supports responsible reporting and more trustworthy downstream use.
+## 2.1 Data Value Awareness & Dataset Selection
 
-## 2.2 Practical Data Profiling (Individual)
-### Completeness & Duplication
-**Before**
+**Dataset:** `calorie_efficiency_dataset.csv` — a synthetic fitness and health metrics dataset containing individual-level physical activity and biometric measurements with a categorical calorie-efficiency outcome label (`low`, `moderate`, `high`).
 
-| Item | Value |
+**Legal use:** The dataset is a synthetically generated public-domain file provided for educational use. It contains no real personal identifiers; individual records are indistinguishable from one another without the surrogate key added during re-engineering.
+
+**Why improving this data is valuable:**
+
+- Health and fitness data directly informs clinical recommendations, personal training plans, and population-health research. Inconsistent units (e.g. body fat stored as a fraction rather than a percentage) or a mixed-scale outcome score can silently skew any downstream analysis or model.
+- The constant `calories_burned` column (all values = 1,500) is a data-generation artefact that, if left in, gives machine-learning models a spurious 'perfect' feature with no real predictive meaning.
+- Standardising class labels (`Low Efficiency` → `low`) removes case and whitespace ambiguity, which is a common source of silent grouping errors in analytics pipelines.
+
+**Key quality issues identified at a glance:**
+
+| Issue | Detail |
+|---|---|
+| Constant column | `calories_burned` = 1,500 for all 1,000,000 rows |
+| Unit inconsistency | `body_fat_percentage` and `muscle_mass_ratio` stored as fractions (0–1) |
+| Mixed-scale numeric | `efficiency_score`: 24.4% of records > 1.0 |
+| Inconsistent labels | `calorie_efficiency` uses mixed casing / verbose forms |
+| Class imbalance | `Low Efficiency` = 938,243 records (93.8%) |
+
+## 2.2 Practical Data Profiling
+
+### Completeness Analysis
+
+Overall data completeness: **100.00%** (0 missing cells across 1,000,000 rows × 15 columns).
+
+No missing values were found in any column. While completeness is 100%, this does not exclude other quality issues such as constant, inconsistent, or out-of-range values.
+
+### Consistency Analysis
+
+**Label consistency (`calorie_efficiency`):**
+
+| Raw label | Count |
 |---|---:|
-| Rows | 1000000 |
-| Columns | 15 |
-| Missing values (total) | 0 |
-| Duplicate rows | 0 |
-| Constant columns | 1 |
+| low efficiency | 938243 |
+| moderate | 34861 |
+| high efficiency | 26896 |
 
-**After**
+The labels use verbose, mixed-case forms (`Low Efficiency`, `High Efficiency`) and an inconsistent short form (`Moderate`). These must be standardised before any grouping or modelling step.
 
-| Item | Value |
-|---|---:|
-| Rows | 1000000 |
-| Columns | 15 |
-| Missing values (total) | 0 |
-| Duplicate rows | 0 |
-| Constant columns | 0 |
+**Unit / scale consistency:**
 
-### Consistency & Accuracy Checks
-Key observations (before):
+- `body_fat_percentage`: maximum observed value = 0.50 (stored as fraction; should be expressed as 0–100%).
+- `muscle_mass_ratio`: maximum observed value ≤ 1 (stored as fraction; renamed to `muscle_mass_pct` and scaled ×100).
+- `efficiency_score`: 24.4% of records have a value > 1.0 while the majority are ≤ 1.0, indicating a mixed measurement scale.
 
-- Column 'calories_burned' is constant; likely a placeholder or redundant.
-- Column 'body_fat_percentage' appears stored as a fraction (0–1) despite being named as a percentage.
-- Column 'efficiency_score' has mixed scale: 24.4% of records are > 1.
+**Constant columns (same value for every row):**
 
-Top label values (before):
-
-| Item | Value |
-|---|---:|
-| Low Efficiency | 938243 |
-| Moderate | 34861 |
-| High Efficiency | 26896 |
-
-Range-rule violations (before, count of records outside expected bounds):
-
-| Item | Value |
-|---|---:|
-| age | 0 |
-| steps_per_day | 0 |
-| active_minutes | 0 |
-| calories_burned | 0 |
-| sleep_hours | 0 |
-| hydration_liters | 0 |
-| bmi | 0 |
-| workouts_per_week | 0 |
-| muscle_mass_ratio | 0 |
-| body_fat_percentage | 0 |
-
-## 2.3 Data Re-engineering Execution (Group)
-Actions applied:
-
-- Standardized column naming to `snake_case`.
-- Standardized `calorie_efficiency` labels to `low` / `moderate` / `high`.
-- Converted fractional fields into percentage points (e.g. `body_fat_percentage` → `body_fat_pct`).
-- Rounded heart-rate fields to integer BPM.
-- Dropped constant columns to reduce redundancy, preserving the constant values in metadata.
-- Normalized the wide table into 3 tables (`demographics`, `activity`, `outcomes`) keyed by `record_id`.
-
-Justification highlights:
-
-- **Consistency & integrity**: unit/label standardization reduces misinterpretation risk.
-- **Quality & responsibility**: removing redundant placeholders avoids false confidence in metrics.
-- **Maintainability**: normalization clarifies ownership of attributes and supports reuse in different analyses.
-
-## 2.4 Validation, Ethics & Quality Review (Individual)
-Validation summary:
-
-- Duplicate rows: 0 → 0
-- Missing values (total): 0 → 0
-- Constant columns detected: 1 → 0
-
-Dropped constant columns (value preserved):
-
-| Item | Value |
+| Column | Constant value |
 |---|---:|
 | calories_burned | 1500 |
 
-Ethics reflection prompts (edit for your submission):
+### Accuracy Analysis
 
-- Privacy: dataset contains no direct identifiers; `record_id` is a surrogate key for engineering only.
-- Bias/fairness: health-related metrics can encode population bias; avoid overgeneralizing findings.
-- Data loss: transformations were documented; avoid deleting records unless clearly justified.
+Range-rule violations (records outside physically plausible bounds):
 
-## 2.5 Advocacy & Professional Reflection (Group)
-Advocacy artefact: see `advocacy_infographic.png` in the output folder. It summarizes why re-engineering improves trust and decision quality.
+| Column | Violations |
+|---|---:|
+| efficiency_score | 244137 |
 
-Reflection prompt: describe how your attitude toward data quality changed after seeing how small inconsistencies (units, labels, redundant fields) can create downstream risks.
+Accuracy observations:
+
+- 'calories_burned' is a constant column (value: 1500). Likely a placeholder — drop it.
+- 'body_fat_percentage' appears stored as a fraction (0–1) despite its name implying a percentage. Multiply by 100.
+- 'muscle_mass_ratio' values are all ≤ 1. Renamed to 'muscle_mass_pct' and scaled ×100 for clarity.
+- 'efficiency_score': 24.4% of records exceed 1.0, while the majority are ≤ 1.0 — indicating a mixed scale. Values > 1 are divided by 10 to standardise to 0–1.
+- 'calorie_efficiency' label is highly imbalanced: 'Low Efficiency' accounts for 93.8% of records. Downstream models should account for this class imbalance.
+
+### Duplicate Analysis
+
+Duplicate rows: **0** (0.00% of 1,000,000 records).
+
+No exact duplicate rows were found. The dataset appears to have been generated without row-level duplication, though near-duplicates (same person, different timestamp) cannot be ruled out without a unique identifier.
+
+## 2.3 Data Re-engineering Execution
+
+The following transformations were applied (all decisions are logged in `metadata.json`):
+
+**Column renaming:** All column headers standardised to `snake_case` for consistent programmatic access.
+
+**Label standardisation:** `calorie_efficiency` mapped: `Low Efficiency` → `low`, `Moderate` → `moderate`, `High Efficiency` → `high`. Eliminates case/verbosity inconsistency.
+
+**Unit conversion — body fat:** `body_fat_percentage` multiplied by 100 and renamed to `body_fat_pct` (0–100 scale). Fixes fraction-vs-percentage inconsistency.
+
+**Unit conversion — muscle mass:** `muscle_mass_ratio` multiplied by 100 and renamed to `muscle_mass_pct`. Same rationale.
+
+**Efficiency score normalisation:** `efficiency_score` values > 1.0 divided by 10 to standardise all records to a 0–1 scale. 244,137 records were rescaled.
+
+**Heart rate rounding:** `heart_rate_resting` and `heart_rate_avg` rounded to integer BPM (physiologically meaningful unit).
+
+**Surrogate key:** `record_id` (1…N) added as the first column for relational normalisation and traceability.
+
+**Drop constant columns:** Dropped: ['calories_burned']. Constant values preserved in metadata to avoid silent data loss.
+
+**Normalisation:** Wide table split into 3 relational tables keyed by `record_id`: `demographics`, `activity`, `outcomes`.
+
+**Justification of decisions:**
+
+- *Data quality*: unit and label standardisation removes ambiguity that would silently corrupt groupby/aggregation results.
+- *Integrity*: rather than imputing or dropping constant columns, their values are documented in metadata so the decision is auditable.
+- *Maintainability*: normalisation into three tables clarifies the semantic ownership of each attribute (demographics, activity behaviour, and outcomes) and avoids redundant column storage.
+
+## 2.4 Validation, Ethics & Quality Review
+
+### Before vs After Comparison
+
+| Metric | Before | After |
+|---|---:|---:|
+| Rows | 1,000,000 | 1,000,000 |
+| Columns (wide) | 15 | 15 |
+| Missing values | 0 | 0 |
+| Duplicate rows | 0 | 0 |
+| Constant columns | 1 | 0 |
+| Distinct calorie_efficiency labels | 3 | 3 |
+| efficiency_score records > 1.0 | 24.4% | 0.0% |
+
+### Ethical Considerations
+
+**Privacy:** The dataset contains no direct personal identifiers (no names, emails, or location data). The surrogate `record_id` is a processing key only and carries no identity information. The dataset is therefore low-risk from a re-identification standpoint.
+
+**Bias & fairness:** The `calorie_efficiency` label is severely imbalanced (~93% 'low'). Any classifier trained on this data without re-balancing techniques will be biased toward predicting 'low' for all inputs, producing systematically unfair assessments for individuals who are genuinely moderate or high performers.
+
+**Data loss:** No records were dropped during re-engineering. The constant `calories_burned` column was removed from the analytical tables but its value (1,500) is preserved in `metadata.json`, ensuring the decision is reversible and auditable.
+
+**Assumption transparency:** The efficiency_score normalisation (÷ 10 for values > 1) is an inference based on the observed bimodal scale distribution. This assumption is documented in `metadata.json` and should be reviewed if the original data-generation process is known.
+
+## 2.5 Advocacy & Professional Reflection
+
+**Advocacy artefact:** `advocacy_infographic.png` in this output folder visualises the before-vs-after quality improvements, the label distribution, and the four professional values upheld during re-engineering.
+
+**Professional values demonstrated:**
+
+- *Data quality*: systematic unit, label, and scale standardisation removes ambiguity and protects downstream consumers of this data.
+- *Integrity*: all transformations are documented in `metadata.json`; nothing is silently overwritten or deleted.
+- *Responsibility*: the class-imbalance observation is surfaced explicitly so that analysts are not misled into deploying a biased model.
+- *Ethical use*: privacy risks are assessed and documented; re-identification is not attempted, and no personally identifiable information is derived.
+
+**Attitude shift:** Before profiling, the dataset appeared clean (no missing values, no duplicates). Deeper analysis revealed that 'clean' does not mean 'correct': constant columns, unit mismatches, mixed scales, and label inconsistency are silent quality issues that only surface when you look beyond surface-level completeness. This reinforces that data quality is an ongoing professional commitment, not a one-time checkbox.

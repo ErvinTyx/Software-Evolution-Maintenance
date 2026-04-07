@@ -1,0 +1,42 @@
+{
+  "rename_map": {
+    "age": "age",
+    "steps_per_day": "steps_per_day",
+    "active_minutes": "active_minutes",
+    "calories_burned": "calories_burned",
+    "sleep_hours": "sleep_hours",
+    "hydration_liters": "hydration_liters",
+    "bmi": "bmi",
+    "workouts_per_week": "workouts_per_week",
+    "muscle_mass_ratio": "muscle_mass_ratio",
+    "body_fat_percentage": "body_fat_percentage",
+    "heart_rate_resting": "heart_rate_resting",
+    "heart_rate_avg": "heart_rate_avg",
+    "continuous_exercise_days": "continuous_exercise_days",
+    "efficiency_score": "efficiency_score",
+    "calorie_efficiency": "calorie_efficiency"
+  },
+  "conversions": {
+    "body_fat_percentage": "fraction\u2192percent_points (* 100) \u2192 body_fat_pct",
+    "muscle_mass_ratio": "fraction\u2192percent_points (* 100) \u2192 muscle_mass_pct"
+  },
+  "efficiency_score_normalisation": {
+    "action": "divided by 10 where score > 1 (0\u201310 scale \u2192 0\u20131 scale)",
+    "records_rescaled": 244137
+  },
+  "label_standardisation": {
+    "before": {
+      "Low Efficiency": 938243,
+      "Moderate": 34861,
+      "High Efficiency": 26896
+    },
+    "after": {
+      "low": 938243,
+      "moderate": 34861,
+      "high": 26896
+    }
+  },
+  "dropped_constant_columns": {
+    "calories_burned": "1500"
+  }
+}
