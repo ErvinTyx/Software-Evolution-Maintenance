@@ -1,0 +1,24 @@
+{
+  "rows": 10103,
+  "cols": 10,
+  "missing_by_col": {
+    "transaction_key": 0,
+    "status": 0,
+    "time": 27,
+    "card_type": 314,
+    "city": 117,
+    "amount": 0,
+    "id": 0,
+    "time_raw": 8,
+    "date": 27,
+    "txn_hour": 27
+  },
+  "exact_duplicate_rows": 0,
+  "duplicated_id_rows": 10103,
+  "valid_time_rows": 10076,
+  "invalid_time_rows": 0,
+  "null_time_rows": 27,
+  "valid_amount_rows": 10103,
+  "invalid_amount_rows": 0,
+  "null_amount_rows": 0
+}

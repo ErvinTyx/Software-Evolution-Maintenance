@@ -1,0 +1,12 @@
+{
+  "transforms": {
+    "status_unmapped_non_null_to_null": 0,
+    "card_type_unmapped_non_null_to_null": 0,
+    "city_unmapped_non_null_to_null": 0,
+    "time_parsed_valid_rows": 10076,
+    "time_parsed_invalid_or_null_rows": 27,
+    "amount_invalid_or_null_rows_imputed": 2211,
+    "amount_global_median_used": 555555.0
+  },
+  "notes": []
+}

@@ -1,0 +1,20 @@
+{
+  "rows": 10103,
+  "cols": 6,
+  "missing_by_col": {
+    "status": 0,
+    "time": 8,
+    "card_type": 314,
+    "city": 117,
+    "amount": 2,
+    "id": 0
+  },
+  "exact_duplicate_rows": 0,
+  "duplicated_id_rows": 10103,
+  "valid_time_rows": 10076,
+  "invalid_time_rows": 19,
+  "null_time_rows": 8,
+  "valid_amount_rows": 7892,
+  "invalid_amount_rows": 2208,
+  "null_amount_rows": 3
+}
